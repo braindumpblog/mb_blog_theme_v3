@@ -63,7 +63,7 @@
   </script>
 
   <div
-    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none dark:bg-black"
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center overflow-y-auto pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none lg:overflow-visible dark:bg-black"
   >
     {{- $url := .RelPermalink -}}<!---->
     {{- with site.Menus.main -}}
@@ -75,7 +75,7 @@
           <a class="{{ if eq .URL $url }}active{{ end }}" href="{{ .Page.Params.redirect_url }}">{{ .Name }}</a>
         {{ else }}
           <a
-            class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal"
+            class="block text-center text-xl leading-[3.5rem] lg:text-base lg:font-normal"
             href="{{- .URL -}}"
             >{{- .Name -}}</a
           >
@@ -86,7 +86,7 @@
 
     {{- with $.Scratch.Get "social_list" -}}
     <nav
-      class="mt-12 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
+      class="mt-6 flex justify-center space-x-10 lg:mt-0 lg:items-center ltr:lg:ml-14 rtl:space-x-reverse rtl:lg:mr-14 dark:invert"
     >
       {{- range . -}}<!---->
       <a
@@ -102,7 +102,7 @@
     </nav>
     {{- end -}}<!---->
 
-    <div class="mt-12 flex justify-center lg:mt-0 lg:items-center ltr:lg:ml-10 rtl:lg:mr-10">
+    <div class="mt-6 flex justify-center lg:mt-0 lg:items-center ltr:lg:ml-10 rtl:lg:mr-10">
       <div
         class="btn-dark text-[0px] h-7 w-7 lg:h-6 lg:w-6 shrink-0 cursor-pointer {{ if site.Params.monoDarkIcon }}[background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert{{ else }}[background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)]{{ end }} dark:[background-position:right]"
         role="button"
