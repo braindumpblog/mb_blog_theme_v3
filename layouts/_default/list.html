@@ -11,6 +11,31 @@
 {{- $pages = where site.RegularPages "Type" "post" -}}<!---->
 {{- end -}}
 
+<!-- Remove Linklog entries from main listing -->
+{{- if .IsHome -}}
+{{- $hidden_posts := where $pages "Params.categories" "intersect" (slice "Linklog") -}}
+{{- $pages = $pages | symdiff $hidden_posts -}}
+{{- end -}}
+
+<!-- Recently I read: show last 3 Linklog posts on homepage -->
+{{- if .IsHome -}}
+{{- $linklog_posts := first 3 (sort (where site.RegularPages "Params.categories" "intersect" (slice "Linklog")) "Date" "desc") -}}
+{{- if $linklog_posts -}}
+<div id="recently_read" class="all_borders not-prose">
+  <details open>
+    <summary>Recently I read:</summary>
+    {{- range $linklog_posts -}}
+    <article>
+      <p>{{- .Content -}}</p>
+    </article>
+    {{- end -}}
+    <p><a href="/categories/linklog">More links</a></p>
+  </details>
+</div>
+{{- end -}}
+{{- end -}}
+
+
 <!-- Articles -->
 {{- $paginator := .Paginate $pages -}} {{- range $index, $page :=
 $paginator.Pages -}}<!---->
@@ -21,15 +46,17 @@ $paginator.Pages -}}<!---->
     >Featured</span
   >
   {{- end -}}
-  {{ if .Title }}<h2 class="!my-0">{{- .Title -}}</h2>{{ end }}
-  <time class="text-xs antialiased opacity-60"
+  {{ if .Title }}<h2 class="!my-0"><a class="no-underline" href="{{- .Permalink -}}">{{- .Title -}}</a></h2>{{ end }}
+  <a href="{{- .Permalink -}}"><time class="text-xs antialiased opacity-60"
     >{{- .Date | time.Format ":date_medium" -}}</time
-  >
-  <p>{{ .Summary | truncate 300 }}</p>
-  <a class="absolute inset-0 text-[0px]" href="{{- .Permalink -}}"
-    >{{- .Title -}}</a
-  >
+  ></a>
+  <!-- <p>{{ .Summary | truncate 300 }}</p> -->
+   {{- .Content -}}
+  <!--<a class="absolute inset-0 text-[0px]" href="{{- .Permalink -}}" -->
+    <!-- >{{- .Title -}}</a -->
+  <!-- > -->
 </section>
+<hr class="post-separator">
 {{- end -}}
 
 <!-- Main Nav -->

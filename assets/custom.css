@@ -1,5 +1,10 @@
-/* Place custom css here. */
 @reference './app.css';
+
+/* Place custom css here. */
+
+:root {
+  --w: calc(800px + 32px * 2);
+}
 
 .microblog_conversation {
     margin-top: 50px;
@@ -68,3 +73,86 @@
   a.reply-by-email {
     margin-right:10px;
   }
+
+  hr.post-separator {
+    border: none;
+    text-align: center;
+    height: auto;
+    overflow: visible;
+    color: inherit;
+  }
+
+  /* This is for the nice arrow separator between posts */
+
+  hr.post-separator::before {
+    content: "\21DC \2015 \2015 \21DD";
+    display: block;
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+  }
+
+  #recently_read article {
+    font-size: 0.9rem;
+  }
+
+  #recently_read a {
+    text-decoration: underline;
+  }
+
+  .all_borders {
+	border-width:1px; 
+	color: var(--black); 
+	border-style:solid; 
+	padding: 10px;
+	border-radius: 10px; 
+}
+
+
+/* Custom fonts */
+
+@font-face {
+font-family: lato;
+src: url('fonts/Lato-Regular.woff2') format('woff2');
+}
+
+@font-face {
+font-family: lato;
+src: url('fonts/Lato-Bold.woff2') format('woff2');
+font-weight: bold;
+}
+
+@font-face {
+font-family: lato;
+src: url('fonts/Lato-Italic.woff2') format('woff2');
+font-style: italic;
+}
+
+@font-face {
+font-family: lato;
+src: url('fonts/Lato-BoldItalic.woff2') format('woff2');
+font-weight: bold;
+font-style: italic;
+}
+
+@font-face {
+font-family: roboto_slab;
+src: url('fonts/RobotoSlab-Regular.woff2') format('woff2');
+}
+
+@font-face {
+font-family: roboto_slab;
+src: url('fonts/RobotoSlab-Bold.woff2') format('woff2');
+font-weight: bold;
+}
+
+
+body { font-family: lato, sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: roboto_slab, serif; }
+
+/*
+This changes the site title font it seems
+*/
+
+header > div > a {
+  font-family: roboto_slab, serif;
+}

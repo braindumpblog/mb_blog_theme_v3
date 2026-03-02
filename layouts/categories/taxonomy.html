@@ -1,0 +1,62 @@
+{{ define "main" }}
+
+{{ $pages := .Pages }}
+
+{{ $pages = sort $pages "Date" "desc" }}
+
+<h2 class="!my-0 mb-10">{{ .Title }}</h2>
+
+{{ $paginator := .Paginate $pages }}
+
+{{ $prevDate := "" }}
+
+{{ range $index, $page := $paginator.Pages }}
+  {{ $currDate := $page.Date.Format "2006-01-02" }}
+
+  {{ if in .Params.categories "Media diet" }}
+
+    {{/* Get the first sentence of the entry */}}
+    {{ $first_sentence_array := findRE `^.*?[\.!\?](?:\s|$)` .Summary 1 }}
+    {{ $first_sentence := index $first_sentence_array 0 }}
+
+    <p class="archive-entry">
+      <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
+      <span class="p-summary">{{ $first_sentence | safeHTML }}</span>
+    </p>
+
+  {{ else if in .Params.categories "Linklog" }}
+
+    {{ if ne $currDate $prevDate }}
+      <h3>{{ $currDate }}</h3>
+      {{ $prevDate = $currDate }}
+    {{ end }}
+
+    <div class="post-content">{{ .Content }}</div>
+
+  {{ else }}
+
+    <p class="archive-entry">
+      <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
+      {{ if .Title }}
+        <span class="p-name">{{ .Title }}</span>
+      {{ else }}
+        <span class="p-summary">{{ .Summary | truncate 100 }}</span>
+      {{ end }}
+    </p>
+
+  {{ end }}
+
+{{ end }}
+
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="mt-14 flex">
+  {{ if $paginator.HasPrev }}
+  <a class="btn not-prose" href="{{ $paginator.Prev.URL }}">← {{ i18n "prev_page" }}</a>
+  {{ end }}
+  {{ if $paginator.HasNext }}
+  <a class="btn not-prose ml-auto" href="{{ $paginator.Next.URL }}">{{ i18n "next_page" }} →</a>
+  {{ end }}
+</nav>
+{{ end }}
+
+{{ end }}

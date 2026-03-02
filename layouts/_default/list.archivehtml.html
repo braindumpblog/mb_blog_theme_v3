@@ -9,14 +9,39 @@
     {{ end }}
 	
 	{{ $list := (where .Site.Pages "Type" "post") }}
-	{{ range $list }}
 
-		<p class="archive-entry">
-			<a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
-			<span class="p-name"><b>{{ .Title }}</b></span> 
-			<span class="p-summary">{{ .Summary | truncate 100 }}</span>
-		</p>
+    <!-- Remove Linklog entries from archive -->
+    {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog") }}
+    {{ $filtered_list := $list | symdiff $hidden_posts }}
 
-	{{ end }}
+    <!-- Show archive grouped by month, treating Media diet entries specially -->
+	{{ range $filtered_list.GroupByDate "January 2006" }}
+
+	 <h2>{{ .Key }}</h2>
+
+    {{ range .Pages }}
+
+      <p class="archive-entry">
+        <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "Jan 2" }}</span></a>:
+
+        {{ if in .Params.categories "Media diet" }}
+
+          {{/* Get the first sentence of the entry */}}
+          {{ $first_sentence_array := findRE `^.*?[\.!\?](?:\s|$)` .Summary 1 }}
+          {{ $first_sentence := index $first_sentence_array 0 }}
+          <span class="p-name">{{ $first_sentence | safeHTML }}</span>
+
+        {{ else if .Title }}
+          <span class="p-name">{{ .Title }}</span>
+        {{ else }}
+          <span class="p-summary">{{ .Summary | truncate 100 }}</span>
+        {{ end }}
+      </p>
+
+    {{ end }}
+
+    <hr class="post-separator">
+
+  {{ end }}
 
 {{ end }}

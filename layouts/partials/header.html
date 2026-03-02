@@ -7,11 +7,6 @@
       href="{{- `` | absURL -}}"
       >{{ site.Title }}</a
     >
-    <div
-      class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer {{ if site.Params.monoDarkIcon }}[background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert{{ else }}[background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)]{{ end }} dark:[background-position:right]"
-      role="button"
-      aria-label="Dark"
-    ></div>
   </div>
 
   <div
@@ -58,10 +53,12 @@
       setDark(event.matches);
     });
 
-    // manual switch
-    const btnDark = document.querySelector('.btn-dark');
-    btnDark.addEventListener('click', () => {
-      setDark(localStorage.getItem('dark') !== 'true');
+    // manual switch (deferred because btn-dark is rendered after this script)
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnDark = document.querySelector('.btn-dark');
+      btnDark.addEventListener('click', () => {
+        setDark(localStorage.getItem('dark') !== 'true');
+      });
     });
   </script>
 
@@ -104,5 +101,13 @@
       {{- end -}}<!---->
     </nav>
     {{- end -}}<!---->
+
+    <div class="mt-12 flex justify-center lg:mt-0 lg:items-center ltr:lg:ml-10 rtl:lg:mr-10">
+      <div
+        class="btn-dark text-[0px] h-7 w-7 lg:h-6 lg:w-6 shrink-0 cursor-pointer {{ if site.Params.monoDarkIcon }}[background:url(./theme.svg)_left_center/cover_no-repeat] dark:invert{{ else }}[background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)]{{ end }} dark:[background-position:right]"
+        role="button"
+        aria-label="Dark"
+      ></div>
+    </div>
   </div>
 </header>
