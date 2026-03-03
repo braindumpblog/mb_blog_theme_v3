@@ -113,6 +113,11 @@
   background: #000;
 }
 
+.dark .btn-menu::before,
+.dark .btn-menu::after {
+  background: #fff;
+}
+
 /* Responsive video embeds */
 article iframe {
   max-width: 100% !important;
