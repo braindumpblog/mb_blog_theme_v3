@@ -46,7 +46,7 @@ $paginator.Pages -}}<!---->
     >Featured</span
   >
   {{- end -}}
-  <h1>Latest posts:</h1>
+  <h2>Latest posts:</h2>
   {{ if .Title }}<h2 class="!my-0"><a class="no-underline" href="{{- .Permalink -}}">{{- .Title -}}</a></h2>{{ end }}
   <a href="{{- .Permalink -}}"><time class="text-xs antialiased opacity-60"
     >{{- .Date | time.Format ":date_medium" -}}</time
