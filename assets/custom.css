@@ -173,9 +173,10 @@ header > div > a {
 }
 
 /* Match single post font size to homepage */
-article.h-entry {
-  font-size: 1rem;
-  line-height: 1.75;
+article.h-entry,
+article.h-entry .e-content {
+  font-size: 1rem !important;
+  line-height: 1.75 !important;
 }
 
 /* Give some space between the recently read section and the next section */
