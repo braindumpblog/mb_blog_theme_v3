@@ -108,6 +108,11 @@
 }
 
 
+/* Responsive video embeds */
+article iframe {
+  max-width: 100%;
+}
+
 /* Custom fonts */
 
 @font-face {
