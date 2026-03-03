@@ -172,6 +172,12 @@ header > div > a {
   font-family: roboto_slab, serif;
 }
 
+/* Match single post font size to homepage */
+article.h-entry {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
 /* Give some space between the recently read section and the next section */
 
 #recently_read {
