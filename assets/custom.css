@@ -108,6 +108,11 @@
 }
 
 
+/* Dark mode for mobile menu */
+.dark .nav-wrapper {
+  background: #000;
+}
+
 /* Responsive video embeds */
 article iframe {
   max-width: 100%;
