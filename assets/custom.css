@@ -173,8 +173,10 @@ header > div > a {
 }
 
 /* Match single post font size to homepage */
-article.h-entry,
-article.h-entry .e-content {
+.prose article.h-entry,
+.prose article.h-entry .e-content,
+.prose article.h-entry .e-content p,
+.prose article.h-entry .e-content li {
   font-size: 1rem !important;
   line-height: 1.75 !important;
 }
