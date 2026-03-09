@@ -195,3 +195,10 @@ header > div > a {
 #recently_read {
   margin-bottom: 20px; /* Adjust the value as needed */
 }
+
+/* Centre-align images in posts */
+.prose img,
+.e-content img {
+  margin-left: auto;
+  margin-right: auto;
+}
