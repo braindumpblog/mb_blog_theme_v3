@@ -12,7 +12,9 @@
 {{ if eq .Title "Media diet" }}
 
   <!-- Filter Navigation (Uses query parameters for micro.blog compatibility) -->
-  <nav class="media-filter-nav mb-8 flex flex-wrap gap-4">
+<!-- Filter Navigation -->
+  <nav class="media-filter-nav">
+    <span class="filter-label">Show:</span>
     <a href="?filter=all" class="filter-btn active" data-target="all">All</a>
     <a href="?filter=books" class="filter-btn" data-target="books">Books</a>
     <a href="?filter=shows" class="filter-btn" data-target="shows">Shows</a>
@@ -106,10 +108,28 @@
   .media-item.hidden {
     display: none;
   }
+  
+  /* Layout for the filter bar */
+  .media-filter-nav {
+    display: flex;
+    flex-wrap: wrap;       /* Allows buttons to wrap to a new line on mobile */
+    align-items: center;   /* Keeps the 'Show:' text vertically aligned with the buttons */
+    gap: 1.5rem;           /* INCREASE OR DECREASE THIS VALUE TO CHANGE SPACING */
+    margin-bottom: 2.5rem; /* Space between the filter bar and the first post */
+  }
+
+  /* Styling for the 'Show:' text */
+  .filter-label {
+    font-weight: bold;
+    margin-right: 0.5rem;  /* Gives a tiny bit of extra breathing room after the colon */
+  }
+
+  /* Styling for the buttons */
   .filter-btn {
     text-decoration: none;
     color: inherit;
     opacity: 0.7;
+    transition: opacity 0.2s ease; /* Adds a smooth fade when hovering */
   }
   .filter-btn:hover {
     opacity: 1;
