@@ -8,7 +8,7 @@
     <!--     {{ end }}  -->
     <!-- {{ end }} -->
 	
-	{{ $list := (where RegularPages "Type" "post") }}
+	{{ $list := (where site.RegularPages "Type" "post") }}
 
     <!-- Remove Linklog entries from archive -->
     {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog") }}
