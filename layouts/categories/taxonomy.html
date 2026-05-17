@@ -1,62 +1,174 @@
 {{ define "main" }}
 
 {{ $pages := .Pages }}
-
 {{ $pages = sort $pages "Date" "desc" }}
 
 <h2 class="!my-0 mb-10">{{ .Title }}</h2>
 
-{{ $paginator := .Paginate $pages }}
+{{/* =================================================================== */}}
+{{/* 1. MEDIA DIET CATEGORY (Unpaginated with JS Filtering)              */}}
+{{/* =================================================================== */}}
 
-{{ $prevDate := "" }}
+{{ if eq .Title "Media diet" }}
 
-{{ range $index, $page := $paginator.Pages }}
-  {{ $currDate := $page.Date.Format "2006-01-02" }}
+  <!-- Filter Navigation (Uses query parameters for micro.blog compatibility) -->
+  <nav class="media-filter-nav mb-8 flex flex-wrap gap-4">
+    <a href="?filter=all" class="filter-btn active" data-target="all">All</a>
+    <a href="?filter=books" class="filter-btn" data-target="books">Books</a>
+    <a href="?filter=shows" class="filter-btn" data-target="shows">Shows</a>
+    <a href="?filter=films" class="filter-btn" data-target="films">Films</a>
+    <a href="?filter=music" class="filter-btn" data-target="music">Music</a>
+    <a href="?filter=podcasts" class="filter-btn" data-target="podcasts">Podcasts</a>
+    <a href="?filter=video-games" class="filter-btn" data-target="video-games">Video games</a>
+  </nav>
 
-  {{ if in .Params.categories "Media diet" }}
+  <div class="media-list">
+  {{/* Loops through ALL pages instead of using .Paginate */}}
+  {{ range $index, $page := $pages }}
+
+    {{/* Extract and format categories for this post */}}
+    {{ $postCategories := slice }}
+    {{ range .Params.categories }}
+      {{ $postCategories = $postCategories | append (urlize .) }}
+    {{ end }}
 
     {{/* Get the first sentence of the entry */}}
     {{ $first_sentence_array := findRE `^.*?[\.!\?](?:\s|$)` .Summary 1 }}
     {{ $first_sentence := index $first_sentence_array 0 }}
 
-    <p class="archive-entry">
+    {{/* Print the archive entry with data-categories attached */}}
+    <p class="archive-entry media-item" data-categories="{{ delimit $postCategories " " }}">
       <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
       <span class="p-summary">{{ $first_sentence | safeHTML }}</span>
     </p>
 
-  {{ else if in .Params.categories "Linklog" }}
+  {{ end }}
+  </div> <!-- End media-list wrapper -->
 
-    {{ if ne $currDate $prevDate }}
-      <h3>{{ $currDate }}</h3>
-      {{ $prevDate = $currDate }}
+{{/* =================================================================== */}}
+{{/* 2. ALL OTHER CATEGORIES (Paginated)                                 */}}
+{{/* =================================================================== */}}
+
+{{ else }}
+
+  {{ $paginator := .Paginate $pages }}
+  {{ $prevDate := "" }}
+
+  <div class="media-list">
+  {{ range $index, $page := $paginator.Pages }}
+    {{ $currDate := $page.Date.Format "2006-01-02" }}
+
+    {{ if in .Params.categories "Linklog" }}
+
+      {{ if ne $currDate $prevDate }}
+        <h3>{{ $currDate }}</h3>
+        {{ $prevDate = $currDate }}
+      {{ end }}
+
+      <div class="post-content">{{ .Content }}</div>
+
+    {{ else }}
+
+      <p class="archive-entry">
+        <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
+        {{ if .Title }}
+          <span class="p-name">{{ .Title }}</span>
+        {{ else }}
+          <span class="p-summary">{{ .Summary | truncate 100 }}</span>
+        {{ end }}
+      </p>
+
     {{ end }}
 
-    <div class="post-content">{{ .Content }}</div>
+  {{ end }}
+  </div>
 
-  {{ else }}
-
-    <p class="archive-entry">
-      <a href="{{ .Permalink }}" class="u-url"><span class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05-0700" }}">{{ .Date.Format "2006-01-02" }}</span></a>:
-      {{ if .Title }}
-        <span class="p-name">{{ .Title }}</span>
-      {{ else }}
-        <span class="p-summary">{{ .Summary | truncate 100 }}</span>
-      {{ end }}
-    </p>
-
+  {{/* Pagination buttons ONLY show if there are enough pages */}}
+  {{ if gt $paginator.TotalPages 1 }}
+  <nav class="mt-14 flex">
+    {{ if $paginator.HasPrev }}
+    <a class="btn not-prose" href="{{ $paginator.Prev.URL }}">← {{ i18n "prev_page" }}</a>
+    {{ end }}
+    {{ if $paginator.HasNext }}
+    <a class="btn not-prose ml-auto" href="{{ $paginator.Next.URL }}">{{ i18n "next_page" }} →</a>
+    {{ end }}
+  </nav>
   {{ end }}
 
 {{ end }}
 
-{{ if gt $paginator.TotalPages 1 }}
-<nav class="mt-14 flex">
-  {{ if $paginator.HasPrev }}
-  <a class="btn not-prose" href="{{ $paginator.Prev.URL }}">← {{ i18n "prev_page" }}</a>
-  {{ end }}
-  {{ if $paginator.HasNext }}
-  <a class="btn not-prose ml-auto" href="{{ $paginator.Next.URL }}">{{ i18n "next_page" }} →</a>
-  {{ end }}
-</nav>
+{{/* =================================================================== */}}
+{{/* 3. INLINE CSS & JS (Only runs when needed)                          */}}
+{{/* =================================================================== */}}
+
+{{ if eq .Title "Media diet" }}
+<style>
+  .media-item.hidden {
+    display: none;
+  }
+  .filter-btn {
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .filter-btn:hover {
+    opacity: 1;
+  }
+  .filter-btn.active {
+    font-weight: bold;
+    text-decoration: underline;
+    opacity: 1;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const mediaItems = document.querySelectorAll('.media-item');
+
+    if (!filterBtns.length || !mediaItems.length) return;
+
+    function applyFilter(targetCategory) {
+      // Update button styles
+      filterBtns.forEach(b => {
+        if (b.getAttribute('data-target') === targetCategory) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+
+      // Show/Hide items based on intersection
+      mediaItems.forEach(item => {
+        const itemCategories = item.getAttribute('data-categories').split(' ');
+        if (targetCategory === 'all' || itemCategories.includes(targetCategory)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+
+    // Check URL for existing filter on initial page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFilter = urlParams.get('filter') || 'all';
+    applyFilter(initialFilter);
+
+    // Listen for filter clicks
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetCategory = this.getAttribute('data-target');
+        applyFilter(targetCategory);
+        
+        // Update URL quietly without reloading
+        const newUrl = targetCategory === 'all' ? window.location.pathname : `?filter=${targetCategory}`;
+        history.pushState(null, '', newUrl);
+      });
+    });
+  });
+</script>
 {{ end }}
 
 {{ end }}
