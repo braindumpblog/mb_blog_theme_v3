@@ -11,7 +11,7 @@
 	{{ $list := (where .Site.Pages "Type" "post") }}
 
     <!-- Remove Linklog entries from archive -->
-    {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog") }}
+    {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog" "crucialtracks") }}
     {{ $filtered_list := $list | symdiff $hidden_posts }}
 
     <!-- Show archive grouped by month, treating Media diet entries specially -->

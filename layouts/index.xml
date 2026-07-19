@@ -10,7 +10,7 @@
     {{- $list := first 25 (where .Site.Pages "Type" "post") -}}
 
     {{- /* Remove linklog entries from list to display */ -}}
-    {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog") }}
+    {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog" "crucialtracks") }}
     {{ $filtered_list := $list | symdiff $hidden_posts }}
 
     {{ range $filtered_list }}
