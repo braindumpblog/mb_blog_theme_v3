@@ -1,14 +1,14 @@
 {{ define "main" }}
-
-    {{ if not .Site.Params.hide_categories_on_archive }}
-        {{ range $name, $taxonomy := $.Site.Taxonomies.categories }}
-            <div class="archive-categories">
-                <a class="archive-category-name" href="{{ "/categories/" | relURL }}{{ $name | urlize }}"> {{ $name }}</a>
-            </div>
-        {{ end }}
-    {{ end }}
+ <!-- Comment out categories -->
+   <!--  {{ if not .Site.Params.hide_categories_on_archive }}  -->
+    <!--     {{ range $name, $taxonomy := $.Site.Taxonomies.categories }}  -->
+    <!--         <div class="archive-categories">  -->
+   <!--              <a class="archive-category-name" href="{{ "/categories/" | relURL }}{{ $name | urlize }}"> {{ $name }}</a>  -->
+    <!--         </div>  -->
+    <!--     {{ end }}  -->
+    <!-- {{ end }} -->
 	
-	{{ $list := (where .Site.Pages "Type" "post") }}
+	{{ $list := (where site.RegularPages "Type" "post") }}
 
     <!-- Remove Linklog entries from archive -->
     {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog" "crucialtracks") }}
