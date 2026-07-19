@@ -11,9 +11,9 @@
 {{- $pages = where site.RegularPages "Type" "post" -}}<!---->
 {{- end -}}
 
-<!-- Remove Linklog entries from main listing -->
+<!-- Remove Linklog and crucialtracks entries from main listing -->
 {{- if .IsHome -}}
-{{- $hidden_posts := where $pages "Params.categories" "intersect" (slice "Linklog") -}}
+{{- $hidden_posts := where $pages "Params.categories" "intersect" (slice "Linklog" "crucialtracks") -}}
 {{- $pages = $pages | symdiff $hidden_posts -}}
 {{- end -}}
 

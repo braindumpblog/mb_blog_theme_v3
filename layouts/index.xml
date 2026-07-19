@@ -7,11 +7,11 @@
     <language>{{.}}</language>
     {{ end }}
     <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
-    {{- $list := first 25 (where .Site.Pages "Type" "post") -}}
+    {{- $list := where .Site.Pages "Type" "post" -}}
 
     {{- /* Remove linklog entries from list to display */ -}}
     {{ $hidden_posts := where $list "Params.categories" "intersect" (slice "Linklog" "crucialtracks") }}
-    {{ $filtered_list := $list | symdiff $hidden_posts }}
+    {{ $filtered_list := first 25 ($list | symdiff $hidden_posts) }}
 
     {{ range $filtered_list }}
     <item>
