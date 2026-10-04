@@ -17,7 +17,15 @@
   <!-- author -->
   {{- $site_author := or site.Author.name site.Params.name site.Title -}}
   <!---->
-  {{- if eq .Kind "page" -}}
+  {{- if eq .Type "book" -}}
+  <!-- book detail pages: .Params.author is the book's author, not yours -->
+  <meta name="description" content="{{- .Params.description | default "" | plainify | htmlUnescape | truncate 160 -}}" />
+  <meta name="author" content="{{- $site_author -}}" />
+  {{- with .Params.cover_url }}
+  <meta property="og:image" content="{{ . }}" />
+  {{- end }}
+  <link rel="stylesheet" href="{{ "books.css" | relURL }}?{{ .Site.Params.theme_seconds }}" />
+  {{- else if eq .Kind "page" -}}
   <meta name="description" content="{{- .Summary -}}" />
   <meta name="author" content="{{- or .Params.author $site_author -}}" />
   {{- else -}}

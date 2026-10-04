@@ -1,0 +1,144 @@
+{{- define "main" -}}
+{{- /*
+  Book detail page: yourdomain.com/books/<isbn>/
+
+  Micro.blog generates these pages (type "book") when the Bookshelves setting
+  "Link books to detail pages on your blog" is on. Book data arrives as front
+  matter: isbn, title, subtitle, author, cover_url, background_url,
+  background_color, description, page_count, genres, shelves, finished_at.
+  See https://help.micro.blog/t/book-detail-pages/4453
+
+  Layout mirrors the default micro.blog/books/<isbn> page (minus its "Start
+  new post" links), inside this theme's header and footer. Your review post is
+  linked alongside the page count; other posts mentioning the book are listed
+  after the description.
+
+  WHY ".html.html": the "Book reading goals" plugin ships book/single.html, and
+  Micro.blog applies non-theme plugins after the theme, so a same-named file
+  here would lose. Hugo looks up book/single.html.html (layout + output format)
+  before book/single.html, so this template wins without uninstalling the
+  plugin.
+
+  Styles: static/books.css, loaded by head.html for book pages only.
+
+  Text is plain English rather than i18n lookups: on Micro.blog the theme's
+  i18n strings come out blank (see the empty "Prev Page"/"Next Page" links).
+
+  This comment sits inside the define because Hugo 0.91 only wraps a
+  template in baseof when the file starts with {{ define }}.
+*/ -}}
+
+{{- /* ISBN: front matter first, falling back to the /books/<isbn>/ URL in
+       case it was parsed as a number rather than a string. */ -}}
+{{- $isbn_pattern := `^[0-9]{9}[0-9Xx](?:[0-9]{3})?$` -}}
+{{- $isbn := printf "%v" (.Params.isbn | default "") -}}
+{{- if not (findRE $isbn_pattern $isbn) -}}
+  {{- $isbn = path.Base .RelPermalink -}}
+{{- end -}}
+
+{{- /* Your posts that link to this book. The newest "Finished reading/
+       listening" post (Epilogue's and Micro.blog's default wording) is
+       linked as the review; failing that, the newest mention is. Any other
+       posts are listed below the description. */ -}}
+{{- $mentions := index (partialCached "book-mentions.html" .) (lower $isbn) -}}
+{{- $review := false -}}
+{{- $review_label := "my review" -}}
+{{- $others := slice -}}
+{{- with $mentions -}}
+  {{- range . -}}
+    {{- if and (not $review) (findRE `(?i)finished\s+(reading|listening)` .RawContent) -}}
+      {{- $review = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $review -}}
+    {{- $review = index . 0 -}}
+    {{- $review_label = "my post" -}}
+  {{- end -}}
+  {{- $others = complement (slice $review) . -}}
+{{- end -}}
+
+<article class="books_page">
+  <header class="books_show_header not-prose">
+    <h1 class="books_show_heading">
+      {{- .Title -}}
+      {{- with .Params.author }} <span>by {{ . }}</span>{{ end -}}
+    </h1>
+    {{- with .Params.subtitle }}
+    <p class="books_show_subtitle">{{ . }}</p>
+    {{- end }}
+  </header>
+
+  <div class="books_show_main not-prose">
+    {{- with .Params.background_url }}
+    <img class="books_show_background" src="{{ . }}" alt="" aria-hidden="true" />
+    {{- else }}{{ with .Params.background_color }}
+    <div class="books_show_background" style="background-color: {{ . | safeCSS }};" aria-hidden="true"></div>
+    {{- end }}{{ end }}
+
+    <div class="books_show_cover">
+      {{- with .Params.cover_url }}
+      <img src="{{ . }}" class="books_detail_cover" alt="Cover of {{ $.Title }}" />
+      {{- end }}
+    </div>
+
+    <div class="books_show_actions">
+      <div class="books_show_meta">
+        {{- with $review }}
+        <div class="books_show_review">
+          Read <a href="{{ .Permalink }}">{{ $review_label }}</a>
+        </div>
+        {{- end }}
+        {{- with .Params.page_count }}
+        <div class="books_show_pages"><b>Pages:</b> {{ . }}</div>
+        {{- end }}
+        {{- with .Params.genres }}
+        <div class="books_show_genres"><b>Genres:</b> {{ delimit . ", " }}</div>
+        {{- end }}
+        {{- with .Params.finished_at }}
+        <div class="books_show_finished"><b>Finished:</b> {{ time.Format ":date_medium" (time .) }}</div>
+        {{- end }}
+      </div>
+
+      <div class="books_view_links">
+        <p><b>View on:</b></p>
+        <ul>
+          <li><a href="https://www.goodreads.com/search?q={{ $isbn }}">Goodreads</a></li>
+          <li><a href="https://bookshop.org/books?keywords={{ $isbn }}" title="Support local bookstores.">Bookshop.org</a></li>
+          <li><a href="https://openlibrary.org/search?q={{ $isbn }}" title="From the Internet Archive.">Open Library</a></li>
+          <li><a href="https://www.worldcat.org/search?q={{ $isbn }}" title="Find at a library.">WorldCat</a></li>
+          <li><a href="https://www.amazon.com/s?field-keywords={{ $isbn }}">Amazon</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {{- /* Description is HTML for some books and plain text with line breaks
+         for others; give the plain-text kind real paragraphs. */ -}}
+  {{- with .Params.description }}
+  <div class="books_description">
+    {{- if findRE `<[a-zA-Z/][^>]*>` . }}
+    {{ . | safeHTML }}
+    {{- else }}
+    {{- range split (replaceRE `(\r?\n\s*)+` "\n" .) "\n" }}{{ with trim . " \t" }}
+    <p>{{ . }}</p>
+    {{- end }}{{ end }}
+    {{- end }}
+  </div>
+  {{- end }}
+
+  {{- with $others }}
+  <section class="books_review">
+    <h2 class="books_mentions_heading">Also mentioned in</h2>
+    <ul class="books_mentions">
+      {{- range . }}
+      <li>
+        <a href="{{ .Permalink }}">{{ with .Title }}{{ . }}{{ else }}{{ .Summary | plainify | htmlUnescape | truncate 80 }}{{ end }}</a>
+        <time class="books_review_date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</article>
+
+{{- end -}}

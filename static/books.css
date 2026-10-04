@@ -1,0 +1,191 @@
+/*
+ * Styling for book detail pages (layouts/book/single.html.html).
+ * Adapted from the default micro.blog/books/<isbn> page: its inline styles
+ * and the books_* rules from micro.blog/css/main.css. Plain CSS, because
+ * Micro.blog doesn't run Tailwind: only classes already in assets/main.css
+ * work. head.html loads it on book pages only.
+ *
+ * Dark mode follows the theme's `dark` class on <html>.
+ */
+
+/* The tinted band bleeds to the full viewport width (as on Micro.blog);
+   clip so 100vw doesn't add a horizontal scrollbar. */
+html {
+  overflow-x: clip;
+}
+
+.books_page {
+  --books_show_border_color: #efefef;
+  --books_review_box_bg: rgba(255, 255, 255, 0.65);
+  --books_review_box_border: rgba(0, 0, 0, 0.08);
+}
+
+html.dark .books_page {
+  --books_show_border_color: #394150;
+  --books_review_box_bg: rgba(17, 24, 39, 0.6);
+  --books_review_box_border: rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Title ---------------------------------------------------------- */
+
+.books_show_header {
+  margin-bottom: 24px;
+}
+
+.books_show_heading {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.books_show_heading span {
+  font-weight: normal;
+}
+
+.books_show_subtitle {
+  margin: 6px 0 0;
+  font-size: 1.1rem;
+  opacity: 0.75;
+}
+
+/* ---- Cover + actions band ------------------------------------------ */
+
+.books_show_main {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(180px, 300px) minmax(0, 1fr);
+  column-gap: clamp(32px, 6vw, 64px);
+  align-items: start;
+  padding: 30px 0;
+  isolation: isolate;
+}
+
+.books_show_background {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  opacity: 0.2;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.books_show_cover,
+.books_show_actions {
+  position: relative;
+  z-index: 1;
+}
+
+.books_show_cover {
+  text-align: center;
+}
+
+.books_show_cover .books_detail_cover {
+  display: inline-block;
+  width: min(100%, 300px);
+  height: auto;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.books_show_actions {
+  padding-top: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.books_show_meta > :first-child {
+  margin-top: 0;
+}
+
+.books_show_review a,
+.books_view_links a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* "Read my review" sits in a soft panel so it stands out from the metadata */
+.books_show_review {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--books_review_box_border);
+  border-radius: 8px;
+  background-color: var(--books_review_box_bg);
+}
+
+.books_show_pages,
+.books_show_genres,
+.books_show_finished {
+  margin-top: 10px;
+}
+
+.books_view_links {
+  margin-top: 28px;
+}
+
+.books_view_links p {
+  margin: 0 0 8px;
+}
+
+.books_view_links ul {
+  margin: 0;
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+.books_view_links li {
+  margin: 0 0 4px;
+}
+
+/* ---- Description ---------------------------------------------------- */
+
+.books_description {
+  margin-top: 30px;
+  margin-bottom: 25px;
+}
+
+.books_description > :first-child {
+  margin-top: 0;
+}
+
+/* ---- Your posts about the book -------------------------------------- */
+
+.books_review {
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 1px solid var(--books_show_border_color);
+}
+
+.books_mentions_heading {
+  margin-top: 0 !important;
+}
+
+.books_review_date {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  text-decoration: none;
+}
+
+.books_mentions li time {
+  margin-left: 0.5em;
+}
+
+/* ---- Narrow screens ------------------------------------------------- */
+
+@media screen and (max-width: 700px) {
+  .books_show_main {
+    display: block;
+  }
+
+  .books_show_cover {
+    margin-bottom: 24px;
+  }
+}

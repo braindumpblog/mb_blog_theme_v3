@@ -1,0 +1,23 @@
+{{- /*
+  Returns a map of ISBN -> the posts that link to that book, newest first.
+
+  Micro.blog builds a /books/<isbn>/ page for every book a post links to as
+  micro.blog/books/<isbn> (the link is rewritten to your own domain when the
+  "Link books to detail pages on your blog" setting is on). Matching on
+  "/books/<isbn>" in the raw Markdown catches both forms of the link.
+
+  Scanning every post is the expensive part, so call this through
+  partialCached — the scan then runs once per build, not once per book:
+
+    {{ $mentions := partialCached "book-mentions.html" . }}
+
+  Keys are lowercased so ISBN-10s ending in "x"/"X" match either way.
+*/ -}}
+{{- $index := newScratch -}}
+{{- range sort (where site.RegularPages "Type" "post") "Date" "desc" -}}
+  {{- $post := . -}}
+  {{- range uniq (findRE `/books/[0-9]{9}[0-9Xx](?:[0-9]{3})?` .RawContent) -}}
+    {{- $index.Add (lower (strings.TrimPrefix "/books/" .)) (slice $post) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $index.Values -}}
